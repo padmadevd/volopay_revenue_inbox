@@ -2,6 +2,8 @@
 
 **Live application:** https://padmadevd.github.io/volopay_revenue_inbox/
 
+The repository contains the source code and also the walkthrough video.
+
 ## Overview
 
 Revenue Intelligence Inbox is a single-page browser application for reviewing call and meeting activity, inspecting conversation evidence, deciding where each conversation's analysis belongs, managing manual route corrections, and exporting organised review outputs.
