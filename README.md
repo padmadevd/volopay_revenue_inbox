@@ -1,52 +1,76 @@
 # Revenue Intelligence Inbox
 
-## Deliverables
-- `index.html` — the app in the submission bundle; a single HTML file containing all CSS and JavaScript. The same file is also provided separately as `revenue_intelligence_inbox.html`. No build step or API key is required.
-- `Revenue_Intelligence_Inbox_Findings.pptx` — five editable slides with source-linked findings and trade-offs.
-- `voiceover_walkthrough.txt` — timed narration/click guide for a roughly three-minute continuous screen recording.
-- `voiceover_tts_clean.txt` — narration text with section labels removed, ready to paste into TTS.
-- `Revenue_Intelligence_Export.zip` — sample organised Markdown outputs plus `manifest.json` and `manifest.csv`.
+**Live application:** https://padmadevd.github.io/volopay_revenue_inbox/
 
-## Run
-1. Open `index.html` (or the separately downloaded `revenue_intelligence_inbox.html`) in a recent Chrome, Edge, Firefox, or Safari browser.
-2. The demo opens in final post-update state. Local storage persists route edits and replay state for that browser origin. Use the “Imports & QA” screen → “Reset to initial” for a clean replay.
-3. The app is entirely local/offline. It has no runtime LLM. For a web deployment, upload this single HTML file, named `index.html`, to a static host that serves HTML as the site root; verify its access/privacy settings before sharing. No hosted URL has been provisioned by this build process.
+## Overview
 
-## Reproduce the replay test
-1. Select **Imports & QA** and click **Reset to initial**: expected 44 unique records (30 calls, 14 meetings) and 17 usable texts.
-2. Click **Repeat initial (shuffled)**. Identity is `(source_type, source_id)`, so counts should remain 44 records / 17 texts.
-3. Open the M07 row in the Inbox while in revision 1. Give it a manual route (suggested for the demo: Customer Success) and save the correction.
-4. Return to **Imports & QA** and click **Apply update**. M07 is upserted to revision 2, text coverage becomes 18, and the manual route remains in effect. Its analysis is labelled pending review because new text arrived.
-5. Click **Replay old initial**. Revision 1 must not overwrite M07 revision 2.
-6. Refresh the browser and confirm the route correction and update remain. Run **Run replay checks** for the checks panel. “Clear local state” reloads the final-state demo; use reset-to-initial to start the sequence again.
+Revenue Intelligence Inbox is a single-page browser application for reviewing call and meeting activity, inspecting conversation evidence, deciding where each conversation's analysis belongs, managing manual route corrections, and exporting organised review outputs.
 
-## Metrics
-- Unique records: count of distinct `(source_type, source_id)` after revision rules apply; never sum batch sizes.
-- Usable supplied text: nonblank call transcript OR at least one nonblank meeting turn. Coverage = covered unique records divided by selected unique records. It is not a connection rate or quality score.
-- Activity day: calls use `started_at`; meetings use `starts_at`; date rendering is Asia/Kolkata. An organiser is not assumed to be the seller or an attendee. Missing dates are not inferred from batch delivery time.
-- Route assignments: route labels summed across unique records; can exceed record count because multiple routes are permitted.
-- Needs attention: records with missing text, pending review, or human-review routing. Missing text does not prove that no conversation happened.
-- No revenue, pipeline-value, win-rate, or cross-rep performance metric is calculated because the provided scope does not support it.
+The application is built as one HTML file with internal CSS and JavaScript. It requires no build step, API key, or runtime AI service. Records, manual routing decisions, and replay state are saved in the browser's local storage.
 
-## Routing and analysis choices
-The application uses deterministic local keyword rules plus conversation-specific prepared draft analyses for the 18 adapted text records. It does not call an LLM, CRM, or other network service. The analysis includes a reason/next step/evidence quote/limits. Updated text is marked `pending_review` rather than showing the old analysis as if it were fresh. Routes include Customer Success, Sales Follow-up, Sales Coaching, Partner / Vendor, Product / Engineering, Contact Restraint, Internal / Operations, and Needs Human Review. Manual route overrides are stored separately from source revisions.
+## Features
 
-## Export structure
-The app can download a ZIP containing `manager-brief.md`, `manifest.json`, `manifest.csv`, `README.txt`, and one Markdown file per active route assignment under `outputs/<route-slug>/`. The generated manifest stores source identity, revision, routes, paths, review state, manual-override flag and analysis freshness. Multi-route records create one file per route with the same source identity. The included ZIP is a sample export in the uncorrected final-state baseline; regenerate from the app after making manual corrections.
+- **Manager dashboard:** Displays activity and coverage metrics for the selected records, with source-type and person filters. Activity dates use the Asia/Kolkata timezone. Call representatives and meeting organisers are treated as different kinds of metadata.
+- **Conversation inbox:** Search and filter records by source and review status. Open a record to inspect its metadata, supplied conversation text, suggested routes, analysis, supporting evidence, limitations, and next-step guidance.
+- **Evidence-aware routing:** Supports routes including Customer Success, Sales Follow-up, Sales Coaching, Partner / Vendor, Product / Engineering, Contact Restraint, Internal / Operations, and Needs Human Review. A record may have more than one route.
+- **Manual corrections:** Managers can override suggested routes. Manual choices are stored separately from source revisions so a later data update does not silently remove the correction.
+- **Manager brief:** Includes a concise brief for 21 August 2026, with activity and review priorities.
+- **Import and QA tools:** Simulate the initial import, repeated imports in shuffled order, a later update, and replay of an older batch. The app also provides controls for importing official JSON delivery files.
+- **Organised exports:** Download a ZIP containing the manager brief, a manifest in JSON and CSV, a short export README, and Markdown outputs grouped by route. Multi-route records produce separate route-specific files while retaining the same source identity.
+- **Responsive layout:** The workspace is designed for desktop and smaller browser windows.
 
-## Three findings and product impact
-1. **Contact boundary (C01):** call source ID `2ec4404c-beee-5377-a63c-aab701da08ed`, exact adapted quote: “I didn't ask for this call, and I'm not interested.” This routes to Contact Restraint + Sales Coaching and prevents generic follow-up logic from overriding explicit disinterest.
-2. **Saved description defect symptom (M07):** meeting source ID `4f304fff-fd40-5cfc-a366-0a134c445c2a`, Turn 2 describes editing and saving the event-payment description; Turn 3 confirms the old wording still displays. This routes to Customer Success + Product / Engineering, with follow-up captured separately. The root cause is not established; new revision analysis is pending review.
-3. **Expired reset token (M09):** meeting source ID `4b5b9192-f3fc-505a-8e77-4d2ffaa54594`, Turn 21: “It says the token has expired. This is the fresh message we just received.” This supports separate access/reset triage rather than merging every account setup symptom into one issue.
+## Getting started
 
-## Deliberately rejected decision
-I rejected a cross-person conversion leaderboard or opportunity-dollar ranking. The input package has no authoritative CRM opportunity values or outcomes, no verified staff-role directory, and it is a selected extract rather than a representative full-team day. The accepted trade-off is smaller, traceable metrics with stated denominators rather than spurious precision.
+1. Open the [live application](https://padmadevd.github.io/volopay_revenue_inbox/) in a recent Chrome, Edge, Firefox, or Safari browser.
+2. Use the left-side navigation to open the dashboard, inbox, manager brief, exports, or **Imports & QA**.
+3. Select a dashboard filter or click a route/activity area to move into the relevant records.
+4. In the inbox, search for a record such as **C01** or **M07**, select it, inspect the evidence, and adjust its route when needed.
+5. Open **Exports & manifest** and download the ZIP or a standalone manifest.
 
-## Important data limitation
-The uploads provided the brief, dictionary, conversation library, and reading-pack HTML, but not the referenced `data/01_initial.json` and `data/02_update.json`. The app therefore uses the 18 supplied conversation texts from `CONVERSATIONS.md`, stages M07's supplied text only in revision 2, and uses 26 explicitly flagged reconstructed metadata-only fixture rows to reach the stated 44 unique records (30 calls + 14 meetings). The app supports importing the official JSON envelope files and will use them to replace the demo fixture. Treat metadata claims from those 26 rows as fixture-only until the official JSON files are imported.
+## Reproduce the import/update test
 
-## Hosting and recording
-This file is static-host-ready but has **not** been published to a public URL from this environment. Upload the HTML to your chosen static host and check it in an incognito window before sharing. Record one continuous three-minute screen capture while performing the steps in `voiceover_walkthrough.txt`; render the supplied script with your own TTS voice, mix it in your screen-recording tool, and save the final video. No screen recording or voice track is fabricated here.
+Open **Imports & QA** and follow these steps:
 
-## Time spent
-Work time was not tracked precisely. Known limitations: missing official JSON delivery files; reconstructed metadata fixture rows; no remote persistence beyond browser storage; deterministic routing and prewritten analysis rather than live AI; no public deployment URL or recorded video generated in this session.
+1. Click **Reset to initial**. The demo should show 44 unique records and 17 usable conversation texts.
+2. Click **Repeat initial (shuffled)**. The unique record count should remain 44, with no duplicate activity added.
+3. Open **Inbox**, select **M07**, and save a manual route correction. For a simple demonstration, choose **Customer Success**.
+4. Return to **Imports & QA** and click **Apply update**. M07's newer text should be applied without creating another record; usable text coverage should rise from 17 to 18.
+5. Click **Re-import old initial**. Revision 1 should not overwrite M07's revision 2 update, and the manual route should remain in effect.
+6. Refresh the browser and confirm the update and manual choice persist.
+7. Click **Run all replay checks** to display the built-in QA results. Use **Clear local state & reset** to restore the final demo state; use **Reset to initial** to replay from the beginning.
+
+### Importing official JSON deliveries
+
+In **Imports & QA**, select the initial delivery JSON under **Initial delivery · revision 1** and click **Import official initial JSON**. Then select the update JSON under **Update delivery · revision 2** and click **Import official update JSON**.
+
+The files should use the envelope format defined by the data contract and include a `records` array. The app identifies records by `(source_type, source_id)`, applies newer revisions, ignores the same or older revisions, and keeps manual route decisions separate from source data.
+
+## Metrics and review states
+
+- **Unique records:** distinct `(source_type, source_id)` pairs after the revision rules have been applied. Batch sizes are not added together.
+- **Usable supplied text:** a nonblank call transcript or at least one nonblank meeting transcript turn.
+- **Transcript coverage:** records with usable supplied text divided by selected unique records. Coverage indicates text availability, not transcript quality or call connection rate.
+- **Route assignments:** the number of route labels across records. This may be greater than the number of records because multi-route assignments are allowed.
+- **Needs attention:** includes records with missing supplied text, pending review, or a route requiring human judgment. Missing text does not prove that a conversation never happened.
+- **Analysis freshness:** when new source text arrives, the app marks the analysis as pending review rather than presenting an old draft as if it reflected the new text.
+
+## Data and processing notes
+
+Routing suggestions use deterministic local rules, and the app includes prepared draft analyses for the supplied adapted conversation texts. The app does not call a live large language model, CRM, or other network service to analyse conversations. Review the cited evidence before acting on a recommendation.
+
+The original `data/01_initial.json` and `data/02_update.json` files were not included in the provided upload package. The demo uses the 18 supplied adapted conversation texts and explicitly flags 26 metadata-only rows as reconstructed fixtures to demonstrate the 44-record workflow. Import the official JSON deliveries before relying on the fixture metadata as authoritative source data.
+
+## Data storage and privacy
+
+The app saves application state in the current browser's local storage. Changes are local to that browser and site origin; they are not synchronised to another device or user. Clearing the browser's site data may remove saved corrections and replay state. Use a hosting and sharing setup appropriate for the sensitivity of the data.
+
+## Export contents
+
+The generated ZIP includes:
+
+- `manager-brief.md` — the daily manager brief.
+- `manifest.json` and `manifest.csv` — record identity, applied revision, routes, output paths, review state, manual-override flag, and analysis freshness.
+- `README.txt` — a brief description of the exported structure.
+- `outputs/<route-slug>/...md` — one Markdown output per active route assignment.
+
+Export paths are relative paths within the ZIP. If one record has multiple routes, each route-specific output retains the same source record identity.
