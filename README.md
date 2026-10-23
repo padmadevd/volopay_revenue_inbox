@@ -1,5 +1,5 @@
 # Revenue Intelligence Inbox
-
+**Repo Link:** https://github.com/padmadevd/volopay_revenue_inbox
 **Live application:** https://padmadevd.github.io/volopay_revenue_inbox/
 
 The repository contains the source code and also the walkthrough video.
